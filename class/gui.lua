@@ -899,10 +899,11 @@ function AAV_Gui:createMinimapIcon(parent, player)
 				info.notClickable = false
 				info.hasArrow = false
 				info.func = function()
-					while(#atroxArenaViewerData.data>0) do
-						atroxArenaViewer:deleteMatch(#atroxArenaViewerData.data)					
+					local numOfMatches = #atroxArenaViewerData.data
+					for i = 1, numOfMatches do
+						parent:deleteMatch(1)					
 					end
-					AAV_TableGui:refreshMatchesFrame()
+					AAV_TableGui:RefreshFrameIfShowing()
 				end
 				
 				UIDropDownMenu_AddButton(info, level)

@@ -216,10 +216,14 @@ function atroxArenaViewer:lookup()
 end
 
 ----
--- returns the method which the communication is chosen to.
+-- returns the method which the communication is chosen to, unless the choice is GUILD when the player is not in one.
 -- @return "GUILD" or "RAID"
 function atroxArenaViewer:getCommMethod()
-	return atroxArenaViewerData.current.communication
+	if (atroxArenaViewerData.current.communication == "GUILD" and not IsInGuild()) then
+		return "RAID" -- Otherwise "not in a guild" messages constantly print.
+	else
+		return atroxArenaViewerData.current.communication
+	end
 end
 
 ----
@@ -648,11 +652,11 @@ function atroxArenaViewer:UPDATE_BATTLEFIELD_STATUS(event, status)
 						if(bracketIndex[mpla]) then -- Not enough people joined on either team, one more attempt to guess the bracket
 							rating = GetPersonalRatedInfo(bracketIndex[mpla])
 						else
-							rating = "0"
+							rating = 0
 						end
 					end
 				else
-					rating = "0"
+					rating = "0" -- The rating will be a string for everyone but the player, easy to test who the player was.
 				end						
 					
 				if (faction == 0) then mmr = greenBeforeMMR	else mmr = goldBeforeMMR end		

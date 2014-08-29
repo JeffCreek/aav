@@ -263,9 +263,18 @@ function AAV_MatchStub:setPlayer(guids, name, rating, damageDone, healingDone, p
 	if( self:getNametoGUID(name) == nil ) then  --someone of your party already left
 		guid = guids[name]
 	else
-		guid = self:getNametoGUID(name) --enemey guid is still present even if they already left
+		guid = self:getNametoGUID(name) --enemy guid is still present even if they already left
 	end
-				
+	if (not self.combatans.dudes[guid]) then	--If an enemy is in stealth the whole game, they won't have been initialized. Still want to record them, even if they did nothing. Hard to debug as it rarely happens.
+		local loc = {"raid", "arena"}
+		for k,v in pairs(loc) do
+			for i=1,5 do
+				if (UnitName(v .. i) == name) then
+					self.updateMatchPlayers(k, v .. i)
+				end
+			end
+		end
+	end
 	self.combatans.dudes[guid].rating = rating -- atm no api to get others rating
 	self.combatans.dudes[guid].ddone = damageDone
 	self.combatans.dudes[guid].hdone = healingDone
@@ -275,7 +284,7 @@ function AAV_MatchStub:setPlayer(guids, name, rating, damageDone, healingDone, p
 end
 
 ----
--- finds the spec of the arenaOpponent 1-5, corresponding to unit arena1 - arena5
+-- finds and sets the spec of the arenaOpponent 1-5, corresponding to unit arena1 - arena5
 -- @param guid
 -- @param opponentNumber
 function AAV_MatchStub:SetOpponentSpec(guid, opponentNumber)
